@@ -1,0 +1,34 @@
+{
+  "botToken": "MTI1MTA3NjgyNTM1OTE5MjEzNw.G7Y_ZJ.gi8r9GnuIqi8u2mWw52Xe30_eJwDHJ2pZ5SmxA",
+  "botStatus": "dnd",
+  "botActivityName": "KnowledgeHub Enterprises",
+  "displayMemberCountVoiceChannelId": "1251083137279328420",
+  "welcomeChannelId": "1251061246984323199",
+  "welcomeLogChannelId": "1251077950883758140",
+  "welcomeRoleId": "1251094955707859004",
+  "welcomeBotRoleId": "1251076825359192137",
+  "welcomeChannelLinkButton": {
+    "label": "Read this First!",
+    "url": "https://discord.com/channels/1251061246984323196/1251063414382530590"
+  },
+  "pingOnJoinChannelId": "1251061246984323199",
+  "dmWelcomerDescription": "",
+  "dmWelcomerLinkButtons": {
+    "first": {
+      "label": "Must Read!!",
+      "url": "https://discord.com/channels/1251061246984323196/1251063414382530590"
+    },
+    "second": {
+      "label": "Website",
+      "url": "https://ideasandknowledge.xyz"
+    },
+    "third": {
+      "label": "Support Founder Lloyd for his journey",
+      "url": "https://discord.com"
+    },
+    "fourth": {
+      "label": "Support Founder Daisukie for his journey",
+      "url": "https://daisukiedev.xyz/"
+    }
+  }
+}

@@ -1,0 +1,141 @@
+const express = require("express");
+const app = express();
+const port = 3000;
+
+const path = require("path");
+app.use("/", express.static(path.join(__dirname, "./public")));
+
+const session = require("express-session");
+app.use(
+  session({
+    secret: "ecret",
+    resave: false,
+    saveUninitialized: true,
+  }),
+);
+
+const { Client, GatewayIntentBits, Routes } = require("discord.js");
+const client = new Client({
+  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages],
+});
+const fs = require("fs");
+const { REST } = require("@discordjs/rest");
+
+const commands = [];
+
+const commandFiles = fs
+  .readdirSync("./commands")
+  .filter((file) => file.endsWith(".js"));
+for (const file of commandFiles) {
+  const command = require(`./commands/${file}`);
+  commands.push(command.data.toJSON());
+}
+
+const rest = new REST({ version: "9" }).setToken(process.env.TOKEN);
+
+/*(async () => {
+  try {
+    await rest.put(
+      Routes.applicationGuildCommands(client.application.id, client.guilds.cache.first().id),
+      { body: commands },
+    );
+
+
+    console.log('Successfully registered application commands.');
+  } catch (error) {
+    console.error(error);
+  }
+})(); */
+
+const discordOAuth2 = require("discord-oauth2");
+const oauth2 = new discordOAuth2({
+  clientId: "1006059847931924581",
+  clientSecret: "t_V1wEnZJ8RBsuCicBYnoDU-RWW0whLq",
+  redirectUri:
+    "https://443fd5d5-2b82-4808-a9da-14f293b28bac-00-3d91e8l9ph2ky.riker.replit.dev/login/callback",
+});
+
+app.get("/login", (req, res) => {
+  const authUrl = oauth2.generateAuthUrl({
+    scope: ["identify", "guilds"],
+    state: "random_state",
+  });
+  res.redirect(authUrl);
+});
+
+app.get("/login/callback", async (req, res) => {
+  const code = req.query.code;
+  try {
+    const tokenResponse = await oauth2.tokenRequest({
+      grantType: "authorization_code",
+      code: code,
+      redirectUri:
+        "https://443fd5d5-2b82-4808-a9da-14f293b28bac-00-3d91e8l9ph2ky.riker.replit.dev/login/callback",
+    });
+    const accessToken = tokenResponse.access_token;
+    const userResponse = await fetch(`https://discord.com/api/users/@me`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    const user = await userResponse.json();
+    req.session.user = user;
+
+    // Send a message to a channel
+    const channel = client.channels.cache.get("1251061246984323199"); //
+    if (!channel) return console.error("Channel not found");
+    channel.send({
+      embeds: [
+        {
+          title: "Dashboard Login",
+          description: `${user.username}#${user.discriminator} has logged in to the dashboard!`,
+          color: 0x00ff00,
+          footer: "test",
+        },
+      ],
+    });
+
+    res.redirect("/dashboard");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error exchanging code for token");
+  }
+});
+
+//admin
+app.post("/add-product-to-client", (req, res) => {
+  const { clientAccount, productName, productID } = req.body;
+
+  if (!clients[clientAccount]) {
+    clients[clientAccount] = { products: [] };
+  }
+  clients[clientAccount].products.push({ productName, productID });
+
+  res.json({
+    message: "Product added successfully",
+    clientData: clients[clientAccount],
+  });
+});
+
+app.get("/dashboard", (req, res) => {
+  if (!req.session.user) {
+    res.redirect("/login");
+  } else {
+    res.sendFile(path.join(__dirname, "./public/dashboard.html"));
+  }
+});
+
+app.use(function (req, res) {
+  res.status(404).sendFile(path.join(__dirname, "./public/index.html"));
+});
+
+require("dotenv").config();
+client.login(process.env.TOKEN).catch(console.error);
+
+client.on("ready", () => {
+  console.log(`Bot ${client.user.tag} is online!`);
+});
+
+app.listen(port, () =>
+  console.log(`Your app is listening at http://localhost:${port}`),
+);
