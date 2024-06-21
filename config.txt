@@ -1,5 +1,5 @@
 {
-  "botToken": "MTI1MTA3NjgyNTM1OTE5MjEzNw.G7Y_ZJ.gi8r9GnuIqi8u2mWw52Xe30_eJwDHJ2pZ5SmxA",
+  "botToken": "",
   "botStatus": "dnd",
   "botActivityName": "KnowledgeHub Enterprises",
   "displayMemberCountVoiceChannelId": "1251083137279328420",
